@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections - AXIOM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+:root {
+    --color-bg: #0A0A0A;
+    --color-surface: #151515;
+    --color-text: #E8E8E8;
+    --color-text-muted: #8A8A8A;
+    --color-accent: #C9A962;
+    --color-accent-dim: #8B7344;
+    --color-border: #252525;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Outfit', sans-serif;
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Navigation */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border);
+    animation: slideDown 0.8s var(--ease-smooth);
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.logo:hover {
+    color: var(--color-text);
+}
+
+.nav-links {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+}
+
+.nav-links a {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.3s var(--ease-smooth);
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width 0.3s var(--ease-smooth);
+}
+
+.nav-links a:hover {
+    color: var(--color-text);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s var(--ease-smooth);
+    position: relative;
+}
+
+.icon-btn:hover {
+    color: var(--color-accent);
+    transform: scale(1.1);
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 400px;
+    height: 100vh;
+    background: var(--color-surface);
+    z-index: 2000;
+    padding: 2rem;
+    transition: right 0.4s var(--ease-smooth);
+    border-left: 1px solid var(--color-border);
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+.close-menu {
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 2rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.close-menu:hover {
+    color: var(--color-accent);
+}
+
+.mobile-nav-links {
+    list-style: none;
+}
+
+.mobile-nav-links li {
+    margin-bottom: 1.5rem;
+}
+
+.mobile-nav-links a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.mobile-nav-links a:hover {
+    color: var(--color-accent);
+}
+
+/* Search Modal */
+.search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.search-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.search-content {
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+}
+
+.close-search {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.close-search:hover {
+    color: var(--color-accent);
+}
+
+.search-input {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 1.5rem;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.3s var(--ease-smooth);
+}
+
+.search-input:focus {
+    border-color: var(--color-accent);
+}
+
+.search-results {
+    margin-top: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-surface);
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+    text-decoration: none;
+    color: var(--color-text);
+}
+
+.search-result-item:hover {
+    border-color: var(--color-accent);
+    transform: translateX(10px);
+}
+
+/* Cart Sidebar */
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 450px;
+    height: 100vh;
+    background: var(--color-surface);
+    z-index: 2000;
+    transition: right 0.4s var(--ease-smooth);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--color-border);
+}
+
+.cart-sidebar.active {
+    right: 0;
+}
+
+.cart-header {
+    padding: 2rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+}
+
+.close-cart {
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.close-cart:hover {
+    color: var(--color-accent);
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.empty-cart {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 4rem 0;
+}
+
+.cart-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--color-accent-dim);
+}
+
+.cart-item-details {
+    flex: 1;
+}
+
+.cart-item-name {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.cart-item-price {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.quantity-btn {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.quantity-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.cart-item-quantity {
+    padding: 0 1rem;
+}
+
+.remove-item {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    margin-left: auto;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.remove-item:hover {
+    color: #ff4444;
+}
+
+.cart-footer {
+    padding: 2rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--color-accent);
+    border: none;
+    color: var(--color-bg);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+    font-family: var(--font-body);
+}
+
+.checkout-btn:hover {
+    background: var(--color-text);
+    transform: translateY(-2px);
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: 1rem 2rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    z-index: 3000;
+    transform: translateY(150%);
+    transition: transform 0.3s var(--ease-smooth);
+}
+
+.toast.show {
+    transform: translateY(0);
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 4rem;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(201, 169, 98, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(201, 169, 98, 0.1) 0%, transparent 50%);
+    animation: pulseGlow 8s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 1200px;
+    animation: fadeInUp 1s var(--ease-smooth) 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.hero-subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    font-weight: 300;
+    line-height: 1.8;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 3rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    border: 2px solid var(--color-accent);
+    transition: all 0.4s var(--ease-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--color-text);
+    transition: left 0.4s var(--ease-smooth);
+    z-index: -1;
+}
+
+.cta-button:hover {
+    color: var(--color-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 169, 98, 0.3);
+}
+
+.cta-button:hover::before {
+    left: 0;
+}
+
+/* Featured Products Section */
+.section {
+    padding: 8rem 4rem;
+    position: relative;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 6rem;
+    animation: fadeInUp 0.8s var(--ease-smooth);
+}
+
+.section-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: all 0.5s var(--ease-smooth);
+    animation: fadeInUp 0.8s var(--ease-smooth);
+    animation-fill-mode: both;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-accent-dim);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.product-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-smooth);
+}
+
+.product-card:hover .product-image::before {
+    opacity: 1;
+}
+
+.product-placeholder {
+    font-size: 4rem;
+    color: var(--color-accent-dim);
+    opacity: 0.3;
+}
+
+.product-info {
+    padding: 2rem;
+}
+
+.product-category {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.product-name {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+.product-description {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.product-btn {
+    padding: 0.7rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    cursor: pointer;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s var(--ease-smooth);
+    font-weight: 400;
+    font-family: var(--font-body);
+}
+
+.product-btn:hover {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    transform: translateX(5px);
+}
+
+/* Feature Section */
+.features {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.feature-item {
+    text-align: center;
+    animation: fadeInUp 0.8s var(--ease-smooth);
+    animation-fill-mode: both;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    transition: transform 0.3s var(--ease-spring);
+}
+
+.feature-item:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.feature-description {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+/* Newsletter Section */
+.newsletter {
+    background: linear-gradient(135deg, #1a1508 0%, #0a0a0a 100%);
+    text-align: center;
+}
+
+.newsletter-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.newsletter-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.newsletter-description {
+    color: var(--color-text-muted);
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s var(--ease-smooth);
+    font-family: var(--font-body);
+}
+
+.newsletter-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+}
+
+.newsletter-button {
+    padding: 1rem 2.5rem;
+    background: var(--color-accent);
+    border: none;
+    color: var(--color-bg);
+    font-weight: 500;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+    transition: all 0.3s var(--ease-smooth);
+    font-family: var(--font-body);
+}
+
+.newsletter-button:hover {
+    background: var(--color-text);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 169, 98, 0.3);
+}
+
+.newsletter-message {
+    margin-top: 1rem;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
+/* Footer */
+footer {
+    padding: 6rem 4rem 3rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 4rem;
+    margin-bottom: 4rem;
+}
+
+.footer-brand {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+.footer-tagline {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+.footer-section h4 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s var(--ease-smooth);
+    font-weight: 300;
+}
+
+.footer-links a:hover {
+    color: var(--color-accent);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 3rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    font-weight: 300;
+}
+
+.footer-bottom a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-smooth);
+}
+
+.footer-bottom a:hover {
+    color: var(--color-accent);
+}
+
+.social-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.social-links a {
+    color: var(--color-text-muted);
+    font-size: 1.3rem;
+    transition: all 0.3s var(--ease-smooth);
+    text-decoration: none;
+}
+
+.social-links a:hover {
+    color: var(--color-accent);
+    transform: translateY(-3px);
+}
+
+/* Page Header (for other pages) */
+.page-header {
+    padding: 10rem 4rem 4rem;
+    text-align: center;
+    background: linear-gradient(135deg, #1a1508 0%, #0a0a0a 100%);
+}
+
+.page-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 300;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.2rem;
+    font-weight: 300;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    nav {
+        padding: 1.5rem 2rem;
+    }
+
+    .nav-links {
+        gap: 2rem;
+    }
+
+    .hero {
+        padding: 0 2rem;
+    }
+
+    .section {
+        padding: 6rem 2rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+
+    .cart-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        padding: 1rem 1.5rem;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+    }
+
+    .section {
+        padding: 4rem 1.5rem;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .newsletter-form {
+        flex-direction: column;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .toast {
+        right: 1rem;
+        left: 1rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html" class="logo">AXIOM</a>
+        <ul class="nav-links">
+            <li><a href="products.html">Products</a></li>
+            <li><a href="collections.html" style="color: var(--color-accent);">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" aria-label="Search" id="searchBtn">⌕</button>
+            <button class="icon-btn" aria-label="Cart" id="cartBtn">
+                ⊞
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="close-menu" id="closeMenu">✕</button>
+        <ul class="mobile-nav-links">
+            <li><a href="products.html">Products</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="search-modal" id="searchModal">
+        <div class="search-content">
+            <button class="close-search" id="closeSearch">✕</button>
+            <input type="text" class="search-input" placeholder="Search products..." id="searchInput">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" id="closeCart">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="section-label">Curated</div>
+        <h1 class="page-title">Collections</h1>
+        <p class="page-subtitle">Thoughtfully curated selections for every lifestyle</p>
+    </div>
+
+    <!-- Collections Grid -->
+    <section class="section">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div class="collections-grid">
+                <!-- Collection 1 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">♪</div>
+                        <h3 class="collection-title">Audio Excellence</h3>
+                        <p class="collection-description">Premium headphones, speakers, and earbuds for the ultimate listening experience.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+
+                <!-- Collection 2 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #1a1508 0%, #0f0f0f 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">◈</div>
+                        <h3 class="collection-title">Smart Living</h3>
+                        <p class="collection-description">Transform your space with intelligent home automation and connected devices.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+
+                <!-- Collection 3 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #151015 0%, #0f0f0f 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">⌚</div>
+                        <h3 class="collection-title">Wearable Tech</h3>
+                        <p class="collection-description">Stylish smartwatches and fitness trackers that complement your lifestyle.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+
+                <!-- Collection 4 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #151515 0%, #0a0a0a 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">⚡</div>
+                        <h3 class="collection-title">Power & Accessories</h3>
+                        <p class="collection-description">Essential accessories and charging solutions for your tech ecosystem.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+
+                <!-- Collection 5 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #101010 0%, #0a0a0a 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">◐</div>
+                        <h3 class="collection-title">Mobile Innovation</h3>
+                        <p class="collection-description">Cutting-edge smartphones and mobile technology for the modern world.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+
+                <!-- Collection 6 -->
+                <div class="collection-card" style="background: linear-gradient(135deg, #1a1210 0%, #0f0f0f 100%);">
+                    <div class="collection-content">
+                        <div class="collection-icon">◆</div>
+                        <h3 class="collection-title">New Arrivals</h3>
+                        <p class="collection-description">Discover our latest products and innovations, fresh from the design studio.</p>
+                        <a href="products.html" class="collection-link">Explore Collection →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" style="text-align: center; background: var(--color-surface);">
+        <div style="max-width: 700px; margin: 0 auto;">
+            <h2 class="section-title" style="margin-bottom: 2rem;">Can't Find What You're Looking For?</h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 3rem; font-size: 1.1rem;">Browse our complete product catalog or get in touch with our team for personalized recommendations.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="products.html" class="cta-button">View All Products</a>
+                <a href="contact.html" class="cta-button" style="background: transparent; color: var(--color-accent);">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">AXIOM</div>
+                <p class="footer-tagline">Elevating technology to an art form. Every product is a statement of refined taste and uncompromising quality.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Shop</h4>
+                <ul class="footer-links">
+                    <li><a href="products.html">All Products</a></li>
+                    <li><a href="products.html#new">New Arrivals</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                    <li><a href="products.html#sale">Sale</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html#shipping">Shipping Info</a></li>
+                    <li><a href="about.html#returns">Returns</a></li>
+                    <li><a href="about.html#warranty">Warranty</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="about.html#careers">Careers</a></li>
+                    <li><a href="about.html#press">Press</a></li>
+                    <li><a href="about.html#partners">Partners</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="social-links">
+            <a href="#" aria-label="Instagram">◉</a>
+            <a href="#" aria-label="Twitter">◊</a>
+            <a href="#" aria-label="Facebook">◈</a>
+            <a href="#" aria-label="LinkedIn">◆</a>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AXIOM. All rights reserved. | <a href="about.html#privacy">Privacy Policy</a> | <a href="about.html#terms">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+// Product Database
+const productsData = [
+    {
+        id: 1,
+        name: "Harmonic X1",
+        category: "Audio",
+        price: 899,
+        description: "Premium wireless headphones with adaptive noise cancellation and 40-hour battery life.",
+        icon: "◆",
+        features: ["Active Noise Cancellation", "40-Hour Battery", "Hi-Res Audio", "Comfort Fit"],
+        inStock: true
+    },
+    {
+        id: 2,
+        name: "Pulse Elite",
+        category: "Wearables",
+        price: 1299,
+        description: "Intelligent fitness companion with health monitoring and seamless connectivity.",
+        icon: "◇",
+        features: ["Health Monitoring", "GPS Tracking", "Waterproof", "7-Day Battery"],
+        inStock: true
+    },
+    {
+        id: 3,
+        name: "Zenith Pro",
+        category: "Computing",
+        price: 2499,
+        description: "Ultra-portable powerhouse with revolutionary cooling and crystal-clear display.",
+        icon: "◈",
+        features: ["4K Display", "Advanced Cooling", "16GB RAM", "1TB SSD"],
+        inStock: true
+    },
+    {
+        id: 4,
+        name: "Quantum Case",
+        category: "Accessories",
+        price: 199,
+        description: "Precision-engineered protection with magnetic mounting and wireless charging.",
+        icon: "◉",
+        features: ["Magnetic Mount", "Wireless Charging", "Drop Protection", "Premium Materials"],
+        inStock: true
+    },
+    {
+        id: 5,
+        name: "Lumina Hub",
+        category: "Smart Home",
+        price: 699,
+        description: "Central command for your connected home with voice and gesture control.",
+        icon: "◊",
+        features: ["Voice Control", "Gesture Control", "Smart Integration", "Energy Efficient"],
+        inStock: true
+    },
+    {
+        id: 6,
+        name: "Nova Pro",
+        category: "Mobile",
+        price: 1799,
+        description: "Revolutionary smartphone with edge-to-edge display and cinematic camera system.",
+        icon: "◐",
+        features: ["5G Connectivity", "Triple Camera", "All-Day Battery", "Premium Display"],
+        inStock: true
+    },
+    {
+        id: 7,
+        name: "Aether Speaker",
+        category: "Audio",
+        price: 599,
+        description: "Immersive 360-degree sound with intelligent room adaptation technology.",
+        icon: "◑",
+        features: ["360° Sound", "Room Adaptation", "Multi-Room Audio", "Touch Controls"],
+        inStock: true
+    },
+    {
+        id: 8,
+        name: "Velocity Watch",
+        category: "Wearables",
+        price: 899,
+        description: "Precision timepiece with smart capabilities and timeless design.",
+        icon: "◒",
+        features: ["Automatic Movement", "Smart Notifications", "Water Resistant", "Premium Build"],
+        inStock: true
+    },
+    {
+        id: 9,
+        name: "Nexus Tablet",
+        category: "Computing",
+        price: 1499,
+        description: "Creative powerhouse with pressure-sensitive display and all-day battery.",
+        icon: "◓",
+        features: ["Pressure Sensitive", "12.9\" Display", "Apple Pencil Support", "M2 Chip"],
+        inStock: true
+    },
+    {
+        id: 10,
+        name: "Aurora Earbuds",
+        category: "Audio",
+        price: 349,
+        description: "True wireless freedom with adaptive EQ and transparency mode.",
+        icon: "◔",
+        features: ["Adaptive EQ", "Transparency Mode", "30-Hour Battery", "Spatial Audio"],
+        inStock: true
+    },
+    {
+        id: 11,
+        name: "Prism Camera",
+        category: "Photography",
+        price: 3299,
+        description: "Professional-grade mirrorless camera with cutting-edge sensor technology.",
+        icon: "◕",
+        features: ["Full Frame Sensor", "8K Video", "In-Body Stabilization", "Weather Sealed"],
+        inStock: true
+    },
+    {
+        id: 12,
+        name: "Helix Charger",
+        category: "Accessories",
+        price: 129,
+        description: "Multi-device wireless charging station with intelligent power distribution.",
+        icon: "◖",
+        features: ["3-Device Charging", "Fast Charging", "LED Indicator", "Compact Design"],
+        inStock: true
+    }
+];
+
+// Get featured products (first 6)
+function getFeaturedProducts() {
+    return productsData.slice(0, 6);
+}
+
+// Get all products
+function getAllProducts() {
+    return productsData;
+}
+
+// Get product by ID
+function getProductById(id) {
+    return productsData.find(product => product.id === parseInt(id));
+}
+
+// Search products
+function searchProducts(query) {
+    const lowerQuery = query.toLowerCase();
+    return productsData.filter(product => 
+        product.name.toLowerCase().includes(lowerQuery) ||
+        product.category.toLowerCase().includes(lowerQuery) ||
+        product.description.toLowerCase().includes(lowerQuery)
+    );
+}
+
+// Filter products by category
+function getProductsByCategory(category) {
+    return productsData.filter(product => 
+        product.category.toLowerCase() === category.toLowerCase()
+    );
+}
+
+// Get unique categories
+function getCategories() {
+    return [...new Set(productsData.map(product => product.category))];
+}
+
+
+// Shopping Cart Management
+class ShoppingCart {
+    constructor() {
+        this.items = this.loadCart();
+        this.updateCartUI();
+    }
+
+    // Load cart from localStorage
+    loadCart() {
+        const savedCart = localStorage.getItem('axiom_cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    }
+
+    // Save cart to localStorage
+    saveCart() {
+        localStorage.setItem('axiom_cart', JSON.stringify(this.items));
+    }
+
+    // Add item to cart
+    addItem(product, quantity = 1) {
+        const existingItem = this.items.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            this.items.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                icon: product.icon,
+                quantity: quantity
+            });
+        }
+        
+        this.saveCart();
+        this.updateCartUI();
+        this.showNotification(`${product.name} added to cart!`);
+    }
+
+    // Remove item from cart
+    removeItem(productId) {
+        this.items = this.items.filter(item => item.id !== productId);
+        this.saveCart();
+        this.updateCartUI();
+        this.showNotification('Item removed from cart');
+    }
+
+    // Update item quantity
+    updateQuantity(productId, quantity) {
+        const item = this.items.find(item => item.id === productId);
+        if (item) {
+            if (quantity <= 0) {
+                this.removeItem(productId);
+            } else {
+                item.quantity = quantity;
+                this.saveCart();
+                this.updateCartUI();
+            }
+        }
+    }
+
+    // Get cart total
+    getTotal() {
+        return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    // Get cart item count
+    getItemCount() {
+        return this.items.reduce((count, item) => count + item.quantity, 0);
+    }
+
+    // Clear cart
+    clearCart() {
+        this.items = [];
+        this.saveCart();
+        this.updateCartUI();
+    }
+
+    // Update cart UI
+    updateCartUI() {
+        const cartCount = document.getElementById('cartCount');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        
+        if (cartCount) {
+            const count = this.getItemCount();
+            cartCount.textContent = count;
+            cartCount.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        if (cartItems) {
+            if (this.items.length === 0) {
+                cartItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+            } else {
+                cartItems.innerHTML = this.items.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            <div class="product-placeholder">${item.icon}</div>
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">$${item.price}</div>
+                            <div class="cart-item-controls">
+                                <button class="quantity-btn" onclick="cart.updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                <span class="cart-item-quantity">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="cart.updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                <button class="remove-item" onclick="cart.removeItem(${item.id})">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        if (cartTotal) {
+            cartTotal.textContent = `$${this.getTotal().toLocaleString()}`;
+        }
+    }
+
+    // Show notification
+    showNotification(message) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Checkout
+    checkout() {
+        if (this.items.length === 0) {
+            this.showNotification('Your cart is empty!');
+            return;
+        }
+        
+        // In a real application, this would redirect to a checkout page
+        this.showNotification('Checkout functionality would be implemented here');
+        console.log('Checkout items:', this.items);
+        console.log('Total:', this.getTotal());
+    }
+}
+
+// Initialize cart
+const cart = new ShoppingCart();
+
+
+// Main JavaScript for AXIOM Website
+document.addEventListener('DOMContentLoaded', function() {
+    initializeNavigation();
+    initializeModals();
+    initializeSearch();
+    loadProducts();
+    initializeNewsletter();
+    initializeScrollEffects();
+});
+
+// Navigation
+function initializeNavigation() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeMenu = document.getElementById('closeMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('no-scroll');
+        });
+    }
+
+    if (closeMenu) {
+        closeMenu.addEventListener('click', closeMobileMenu);
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            closeMobileMenu();
+            closeCart();
+            closeSearch();
+        });
+    }
+
+    // Close mobile menu when clicking a link
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+}
+
+function closeMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+    
+    if (mobileMenu) mobileMenu.classList.remove('active');
+    if (overlay && !document.getElementById('cartSidebar').classList.contains('active') && 
+        !document.getElementById('searchModal').classList.contains('active')) {
+        overlay.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+    }
+}
+
+// Cart
+function initializeModals() {
+    const cartBtn = document.getElementById('cartBtn');
+    const closeCart = document.getElementById('closeCart');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    if (cartBtn) {
+        cartBtn.addEventListener('click', openCart);
+    }
+
+    if (closeCart) {
+        closeCart.addEventListener('click', closeCartFunc);
+    }
+
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            cart.checkout();
+        });
+    }
+}
+
+function openCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const overlay = document.getElementById('overlay');
+    
+    if (cartSidebar) cartSidebar.classList.add('active');
+    if (overlay) overlay.classList.add('active');
+    document.body.classList.add('no-scroll');
+}
+
+function closeCartFunc() {
+    closeCart();
+}
+
+function closeCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const overlay = document.getElementById('overlay');
+    
+    if (cartSidebar) cartSidebar.classList.remove('active');
+    if (overlay && !document.getElementById('mobileMenu').classList.contains('active') && 
+        !document.getElementById('searchModal').classList.contains('active')) {
+        overlay.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+    }
+}
+
+// Search
+function initializeSearch() {
+    const searchBtn = document.getElementById('searchBtn');
+    const closeSearch = document.getElementById('closeSearch');
+    const searchInput = document.getElementById('searchInput');
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', openSearch);
+    }
+
+    if (closeSearch) {
+        closeSearch.addEventListener('click', closeSearchFunc);
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
+}
+
+function openSearch() {
+    const searchModal = document.getElementById('searchModal');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchModal) searchModal.classList.add('active');
+    if (searchInput) {
+        setTimeout(() => searchInput.focus(), 100);
+    }
+}
+
+function closeSearchFunc() {
+    closeSearch();
+}
+
+function closeSearch() {
+    const searchModal = document.getElementById('searchModal');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (searchModal) searchModal.classList.remove('active');
+    if (searchInput) searchInput.value = '';
+    if (searchResults) searchResults.innerHTML = '';
+}
+
+function handleSearch(e) {
+    const query = e.target.value.trim();
+    const searchResults = document.getElementById('searchResults');
+    
+    if (!searchResults) return;
+
+    if (query.length < 2) {
+        searchResults.innerHTML = '';
+        return;
+    }
+
+    const results = searchProducts(query);
+    
+    if (results.length === 0) {
+        searchResults.innerHTML = '<p style="color: var(--color-text-muted); padding: 2rem;">No products found</p>';
+        return;
+    }
+
+    searchResults.innerHTML = results.map(product => `
+        <a href="products.html#product-${product.id}" class="search-result-item">
+            <div style="font-size: 2rem; margin-right: 1rem;">${product.icon}</div>
+            <div style="flex: 1;">
+                <div style="font-weight: 500;">${product.name}</div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted);">${product.category}</div>
+            </div>
+            <div style="font-size: 1.2rem; color: var(--color-accent);">$${product.price}</div>
+        </a>
+    `).join('');
+}
+
+// Load Products
+function loadProducts() {
+    const productsGrid = document.getElementById('productsGrid');
+    
+    if (!productsGrid) return;
+
+    const products = getFeaturedProducts();
+    
+    productsGrid.innerHTML = products.map((product, index) => `
+        <div class="product-card" style="animation-delay: ${index * 0.1}s">
+            <div class="product-image">
+                <div class="product-placeholder">${product.icon}</div>
+            </div>
+            <div class="product-info">
+                <div class="product-category">${product.category}</div>
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-description">${product.description}</p>
+                <div class="product-footer">
+                    <span class="product-price">$${product.price.toLocaleString()}</span>
+                    <button class="product-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add to cart function (global)
+function addToCart(productId) {
+    const product = getProductById(productId);
+    if (product) {
+        cart.addItem(product);
+    }
+}
+
+// Newsletter
+function initializeNewsletter() {
+    const newsletterForm = document.getElementById('newsletterForm');
+    
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', handleNewsletterSubmit);
+    }
+}
+
+function handleNewsletterSubmit(e) {
+    e.preventDefault();
+    
+    const emailInput = document.getElementById('emailInput');
+    const message = document.getElementById('newsletterMessage');
+    const button = e.target.querySelector('button');
+    
+    if (!emailInput || !message) return;
+
+    const email = emailInput.value.trim();
+    
+    if (!email) return;
+
+    // Simulate API call
+    button.textContent = 'Subscribing...';
+    button.disabled = true;
+
+    setTimeout(() => {
+        message.textContent = 'Thank you for subscribing! Check your email for confirmation.';
+        message.style.color = 'var(--color-accent)';
+        emailInput.value = '';
+        button.textContent = 'Subscribe';
+        button.disabled = false;
+
+        // Clear message after 5 seconds
+        setTimeout(() => {
+            message.textContent = '';
+        }, 5000);
+
+        // Show toast
+        cart.showNotification('Successfully subscribed to newsletter!');
+    }, 1000);
+}
+
+// Scroll Effects
+function initializeScrollEffects() {
+    const navbar = document.getElementById('navbar');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        // Add shadow to navbar on scroll
+        if (currentScroll > 50) {
+            navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        } else {
+            navbar.style.boxShadow = 'none';
+        }
+
+        lastScroll = currentScroll;
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements
+    const animatedElements = document.querySelectorAll('.product-card, .feature-item');
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        
+        if (href === '#') return;
+
+        e.preventDefault();
+        const target = document.querySelector(href);
+        
+        if (target) {
+            const offsetTop = target.offsetTop - 100;
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // ESC key closes modals
+    if (e.key === 'Escape') {
+        closeSearch();
+        closeCart();
+        closeMobileMenu();
+    }
+    
+    // Ctrl/Cmd + K opens search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+    }
+});
+
+    </script>
+
+    <style>
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .collection-card {
+            padding: 4rem 3rem;
+            border: 1px solid var(--color-border);
+            transition: all 0.5s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s var(--ease-smooth);
+        }
+
+        .collection-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--color-accent-dim);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .collection-card:hover::before {
+            opacity: 1;
+        }
+
+        .collection-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .collection-icon {
+            font-size: 4rem;
+            color: var(--color-accent);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .collection-title {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .collection-description {
+            color: var(--color-text-muted);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .collection-link {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: all 0.3s var(--ease-smooth);
+            display: inline-block;
+        }
+
+        .collection-link:hover {
+            transform: translateX(10px);
+        }
+    </style>
+</body>
+</html>
