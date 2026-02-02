@@ -2,7 +2,7 @@
 
 A modern, multi‑page e‑commerce storefront built with HTML, CSS, and vanilla JavaScript. Includes product browsing, search, filtering, a full shopping cart, and responsive UI.
 
-**Live demo:** TODO — add your live URL here
+Live demo: https://mustafa-sarwari.github.io/Frontend-Project/
 
 ## Highlights
 - Multi‑page site: Home, Products, Collections, About, Contact
