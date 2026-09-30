@@ -146,6 +146,7 @@ class ShoppingCart {
             if (!response.ok) throw new Error(order.error || 'Unable to create the order.');
             this.showNotification(`Demo order saved: ${order.id}. No payment was collected.`);
             this.clearCart();
+            if (typeof closeCart === "function") closeCart();
         } catch (error) { this.showNotification(error.message || 'Start the backend to save a demo order.'); }
         finally { this.checkingOut = false; }
     }

@@ -474,7 +474,7 @@ nav {
 }
 
 /* Toast Notification */
-.toast {
+.toast { pointer-events: none;
     position: fixed;
     bottom: 2rem;
     right: 2rem;
@@ -1054,7 +1054,7 @@ footer {
         gap: 2rem;
     }
 
-    .toast {
+    .toast { pointer-events: none;
         right: 1rem;
         left: 1rem;
     }
@@ -1062,6 +1062,12 @@ footer {
 
     </style>
 <link rel="stylesheet" href="contact.css">
+<script>
+if(location.protocol!=='file:'&&!location.hostname.endsWith('.github.io')){
+ const enableAccount=()=>{const s=document.createElement('script');s.src='/account.js';document.head.append(s);};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enableAccount,{once:true});else enableAccount();
+}
+</script>
 </head>
 <body>
     <!-- Navigation -->

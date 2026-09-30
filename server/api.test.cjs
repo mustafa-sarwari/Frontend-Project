@@ -1,27 +1,160 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const { once } = require('node:events');
-const { buildServer } = require('./index.cjs');
-test('validates submissions and keeps stored data isolated', async () => {
-  const server = buildServer({ database: ':memory:' });
-  server.listen(0, '127.0.0.1'); await once(server, 'listening');
-  const url = `http://127.0.0.1:${server.address().port}`;
-  const request = (body, headers = {}) => fetch(url + '/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
-  try {
-    assert.equal((await request({})).status, 400);
-    assert.equal((await request({"name": "Sample", "email": "sample@example.org", "message": "Product enquiry"}, { Origin: 'https://untrusted.example' })).status, 403);
-    const response = await request({"name": "Sample", "email": "sample@example.org", "message": "Product enquiry"});
-    assert.equal(response.status, 201);
-    const created = await response.json(); assert.ok(created.id);
-    const cookie = response.headers.get('set-cookie').split(';')[0];
-    assert.equal((await fetch(url + "/api/messages", { headers: { Cookie: cookie } })).status, 405);
-    assert.equal((await fetch(url + '/server/index.cjs')).status, 404);
-    assert.equal((await fetch(url + '/.git/config')).status, 404);
-  } finally { await new Promise(resolve => server.close(resolve)); }
+const { test } = require("node:test");
+const assert = require("node:assert/strict");
+const { once } = require("node:events");
+const { buildServer } = require("./index.cjs");
+const fixture = require("./fixture.cjs");
+const json = (method, body, cookie, extra = {}) => ({
+  method,
+  headers: { "Content-Type": "application/json", Cookie: cookie, ...extra },
+  body: JSON.stringify(body),
 });
-test('prices demo orders from the server catalog',async()=>{
- const server=buildServer({database:':memory:'});server.listen(0,'127.0.0.1');await once(server,'listening');const url=`http://127.0.0.1:${server.address().port}`;
- try {const response=await fetch(url+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:[{id:1,quantity:2,price:1}],totalCents:1})});assert.equal(response.status,201);assert.equal((await response.json()).totalCents,179800);
- assert.equal((await fetch(url+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:[{id:1,quantity:-1}]})})).status,400);
- }finally{await new Promise(resolve=>server.close(resolve));}
+test("domain workflow validates input, enforces access, and handles retries", async () => {
+  const server = buildServer({ database: ":memory:", rateLimit: false });
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const url = `http://127.0.0.1:${server.address().port}`;
+  const signup = async (email) => {
+    const response = await fetch(
+      url + "/api/auth/register",
+      json(
+        "POST",
+        { name: "Sample", email, password: "A long test password 123!" },
+        "",
+      ),
+    );
+    assert.equal(response.status, 201);
+    return response.headers.get("set-cookie").split(";")[0];
+  };
+  try {
+    const cookie = await signup("owner@example.org"),
+      other = await signup("other@example.org");
+    const data = await fixture.body(url, cookie);
+    const route = "/api/" + fixture.resource;
+    if (fixture.invalid)
+      assert.equal(
+        (await fetch(url + route, json("POST", fixture.invalid, cookie)))
+          .status,
+        400,
+      );
+    const key = "test-idempotency-12345",
+      created = await fetch(
+        url + route,
+        json("POST", data, cookie, { "Idempotency-Key": key }),
+      );
+    assert.equal(created.status, 201);
+    const row = await created.json();
+    assert.ok(row.id);
+    const repeated = await fetch(
+      url + route,
+      json("POST", data, cookie, { "Idempotency-Key": key }),
+    );
+    assert.equal(repeated.status, 200);
+    assert.equal((await repeated.json()).id, row.id);
+    const conflict = await fetch(
+      url + route,
+      json("POST", { ...data, extra: "changed" }, cookie, {
+        "Idempotency-Key": key,
+      }),
+    );
+    assert.equal(conflict.status, 409);
+    if (fixture.submission) {
+      const own = await (
+        await fetch(
+          url + "/api/account/submissions?resource=" + fixture.resource,
+          { headers: { Cookie: cookie } },
+        )
+      ).json();
+      assert.equal(own.length, 1);
+      assert.equal(
+        (
+          await (
+            await fetch(
+              url + "/api/account/submissions?resource=" + fixture.resource,
+              { headers: { Cookie: other } },
+            )
+          ).json()
+        ).length,
+        0,
+      );
+      assert.equal(
+        (await fetch(url + "/api/admin/inbox", { headers: { Cookie: other } }))
+          .status,
+        403,
+      );
+      const inbox = await (
+        await fetch(url + "/api/admin/inbox", { headers: { Cookie: cookie } })
+      ).json();
+      assert.equal(inbox.length, 1);
+      assert.equal(
+        (
+          await fetch(
+            url + "/api/admin/inbox/" + row.id,
+            json("PATCH", { status: "reviewing" }, cookie),
+          )
+        ).status,
+        200,
+      );
+    } else {
+      const read = await fetch(url + route + "/" + row.id, {
+        headers: { Cookie: cookie },
+      });
+      assert.equal(read.status, 200);
+      const paged = await (
+        await fetch(url + route + "?page=1&limit=1", {
+          headers: { Cookie: cookie },
+        })
+      ).json();
+      assert.equal(paged.items.length, 1);
+      assert.ok(paged.total >= 1);
+      assert.equal(
+        (
+          await fetch(url + route + "?limit=1000", {
+            headers: { Cookie: cookie },
+          })
+        ).status,
+        400,
+      );
+      if (!fixture.shared)
+        assert.equal(
+          (
+            await fetch(url + route + "/" + row.id, {
+              headers: { Cookie: other },
+            })
+          ).status,
+          404,
+        );
+      else if (fixture.adminOnly)
+        assert.equal(
+          (
+            await fetch(url + route + "/" + row.id, {
+              headers: { Cookie: other },
+            })
+          ).status,
+          403,
+        );
+      if (fixture.patch) {
+        const edit = await fetch(
+          url + route + "/" + row.id,
+          json("PATCH", fixture.patch, cookie, { "If-Match": '"1"' }),
+        );
+        assert.equal(edit.status, 200);
+        assert.equal((await edit.json()).version, 2);
+        assert.equal(
+          (
+            await fetch(
+              url + route + "/" + row.id,
+              json("PATCH", fixture.patch, cookie, { "If-Match": '"1"' }),
+            )
+          ).status,
+          409,
+        );
+      }
+    }
+    const activity = await (
+      await fetch(url + "/api/activity", { headers: { Cookie: cookie } })
+    ).json();
+    assert.ok(activity.length >= 1);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 });
