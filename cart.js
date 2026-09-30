@@ -7,8 +7,15 @@ class ShoppingCart {
 
     // Load cart from localStorage
     loadCart() {
-        const savedCart = localStorage.getItem('axiom_cart');
-        return savedCart ? JSON.parse(savedCart) : [];
+        try {
+            const saved = JSON.parse(localStorage.getItem('axiom_cart') || '[]');
+            if (!Array.isArray(saved)) return [];
+            return saved.flatMap(item => {
+                const product = getProductById(item.id);
+                if (!product || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 20) return [];
+                return [{ id: product.id, name: product.name, price: product.price, icon: product.icon, quantity: item.quantity }];
+            });
+        } catch { return []; }
     }
 
     // Save cart to localStorage
@@ -21,7 +28,7 @@ class ShoppingCart {
         const existingItem = this.items.find(item => item.id === product.id);
         
         if (existingItem) {
-            existingItem.quantity += quantity;
+            existingItem.quantity = Math.min(20, existingItem.quantity + quantity);
         } else {
             this.items.push({
                 id: product.id,
@@ -52,7 +59,7 @@ class ShoppingCart {
             if (quantity <= 0) {
                 this.removeItem(productId);
             } else {
-                item.quantity = quantity;
+                item.quantity = Math.min(20, Math.floor(quantity));
                 this.saveCart();
                 this.updateCartUI();
             }
@@ -130,16 +137,17 @@ class ShoppingCart {
     }
 
     // Checkout
-    checkout() {
-        if (this.items.length === 0) {
-            this.showNotification('Your cart is empty!');
-            return;
-        }
-        
-        // In a real application, this would redirect to a checkout page
-        this.showNotification('Checkout functionality would be implemented here');
-        console.log('Checkout items:', this.items);
-        console.log('Total:', this.getTotal());
+    async checkout() {
+        if (!this.items.length || this.checkingOut) { this.showNotification('Add an item first.'); return; }
+        this.checkingOut = true;
+        try {
+            const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: this.items.map(({ id, quantity }) => ({ id, quantity })) }) });
+            const order = await response.json();
+            if (!response.ok) throw new Error(order.error || 'Unable to create the order.');
+            this.showNotification(`Demo order saved: ${order.id}. No payment was collected.`);
+            this.clearCart();
+        } catch (error) { this.showNotification(error.message || 'Start the backend to save a demo order.'); }
+        finally { this.checkingOut = false; }
     }
 }
 

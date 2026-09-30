@@ -1,65 +1,25 @@
-# AXIOM — Premium E‑Commerce Frontend
+# AXIOM storefront demo
 
-A modern, multi‑page e‑commerce storefront built with HTML, CSS, and vanilla JavaScript. Includes product browsing, search, filtering, a full shopping cart, and responsive UI.
+Browse products, use a validated persistent cart, and save demo orders. The backend calculates prices from its catalog rather than trusting client totals. Contact requests are stored privately through a write-only API. Shared scripts replace duplicated inline copies.
 
-Live demo: https://mustafa-sarwari.github.io/Frontend-Project/
+## Run the full-stack demo
 
-## Highlights
-- Multi‑page site: Home, Products, Collections, About, Contact
-- Working cart with quantity updates and persistence
-- Live search and category filters
-- Mobile‑first responsive layout and animated UI
-- LocalStorage‑backed cart data
-
-## Tech Stack
-- HTML5
-- CSS3
-- Vanilla JavaScript
-
-## Project Structure
-```
-.
-├── index.html
-├── products.html
-├── collections.html
-├── about.html
-├── contact.html
-├── styles.css
-├── products-data.js
-├── cart.js
-├── main.js
-└── products-page.js
-```
-
-## Getting Started
-### Run locally
-Open `index.html` in your browser — no build step required.
-
-### Deploy
-You can deploy via GitHub Pages, Netlify, Vercel, or any static hosting provider.
-
-## Customization
-- Brand name: replace “AXIOM” in HTML files.
-- Colors: edit CSS variables in `styles.css`.
-- Products: update `products-data.js`.
-
-## License
-**All Rights Reserved.**
-
-This project is proprietary. You may view the code, but copying, modifying, distributing, or using it without explicit permission is prohibited.
-
-## Contact
-For permissions and inquiries, please contact the project owner.
-
-## Run locally
+Requires Node.js 24 or newer.
 
 ```bash
-git clone https://github.com/mustafa-sarwari/Frontend-Project.git
-cd Frontend-Project
+npm run start:api
 ```
 
-Open `index.html` in a browser, or serve the directory with a local static server. There is no npm build step for this project.
+Open http://localhost:4000. Run `npm run test:api` to check the backend workflow.
 
-## Project scope
+## Implementation and scope
 
-This is a frontend storefront demonstration. Cart state is stored in the browser; a production checkout, payment processor, and order-management backend are outside this repository.
+- `server/index.cjs` defines API routes and validation.
+- `server/http.cjs` provides the HTTP server, bounded JSON parsing, static-file protection, session cookies, and parameterized SQLite storage.
+- `.data/` contains the local database and is ignored by Git.
+
+The server binds to loopback. Session cookies separate browser data; they are not user accounts or cross-device login. These are local portfolio demos. Static hosting cannot run the Node API. Production deployment would require account authentication, abuse controls, and deployment configuration. No payment processing or email delivery is implemented.
+
+## Learning context
+
+[Mustafa Sarwari](https://github.com/mustafa-sarwari) — junior full-stack developer building practical frontend and backend skills.

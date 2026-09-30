@@ -1,0 +1,13 @@
+{
+  "name": "frontend-project",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start:api": "node server/index.cjs",
+    "test:api": "node --test server/api.test.cjs",
+    "start": "node server/index.cjs"
+  }
+}
