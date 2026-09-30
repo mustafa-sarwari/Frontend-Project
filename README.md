@@ -50,3 +50,16 @@ This project is proprietary. You may view the code, but copying, modifying, dist
 
 ## Contact
 For permissions and inquiries, please contact the project owner.
+
+## Run locally
+
+```bash
+git clone https://github.com/mustafa-sarwari/Frontend-Project.git
+cd Frontend-Project
+```
+
+Open `index.html` in a browser, or serve the directory with a local static server. There is no npm build step for this project.
+
+## Project scope
+
+This is a frontend storefront demonstration. Cart state is stored in the browser; a production checkout, payment processor, and order-management backend are outside this repository.
