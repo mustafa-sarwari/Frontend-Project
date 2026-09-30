@@ -1,0 +1,6 @@
+
+# Local runtime state
+.data/
+node_modules/
+.env
+.env.local

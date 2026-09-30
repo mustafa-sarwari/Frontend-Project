@@ -1,65 +1,38 @@
-# AXIOM — Premium E‑Commerce Frontend
+# AXIOM storefront — full-stack project
 
-A modern, multi‑page e‑commerce storefront built with HTML, CSS, and vanilla JavaScript. Includes product browsing, search, filtering, a full shopping cart, and responsive UI.
+Save validated, server-priced cart orders to an account and reopen private order history.
 
-Live demo: https://mustafa-sarwari.github.io/Frontend-Project/
+**Frontend:** HTML, CSS, and JavaScript. **Backend:** Node.js 24, HTTP API, SQLite, and account sessions.
 
-## Highlights
-- Multi‑page site: Home, Products, Collections, About, Contact
-- Working cart with quantity updates and persistence
-- Live search and category filters
-- Mobile‑first responsive layout and animated UI
-- LocalStorage‑backed cart data
-
-## Tech Stack
-- HTML5
-- CSS3
-- Vanilla JavaScript
-
-## Project Structure
-```
-.
-├── index.html
-├── products.html
-├── collections.html
-├── about.html
-├── contact.html
-├── styles.css
-├── products-data.js
-├── cart.js
-├── main.js
-└── products-page.js
-```
-
-## Getting Started
-### Run locally
-Open `index.html` in your browser — no build step required.
-
-### Deploy
-You can deploy via GitHub Pages, Netlify, Vercel, or any static hosting provider.
-
-## Customization
-- Brand name: replace “AXIOM” in HTML files.
-- Colors: edit CSS variables in `styles.css`.
-- Products: update `products-data.js`.
-
-## License
-**All Rights Reserved.**
-
-This project is proprietary. You may view the code, but copying, modifying, distributing, or using it without explicit permission is prohibited.
-
-## Contact
-For permissions and inquiries, please contact the project owner.
+The server checks catalogue IDs, product availability, and quantity, then calculates totals from stored product prices. Checkout closes the cart after success; notifications no longer block navigation to private order history.
 
 ## Run locally
 
 ```bash
-git clone https://github.com/mustafa-sarwari/Frontend-Project.git
-cd Frontend-Project
+npm run start:api
 ```
 
-Open `index.html` in a browser, or serve the directory with a local static server. There is no npm build step for this project.
+Open <http://localhost:4000>, choose **Sign in · Account**, and create your local owner account. **My workspace** opens the stored workflows. The first account manages owner-only resources; later accounts receive member access and private account data.
 
-## Project scope
+## Implementation
 
-This is a frontend storefront demonstration. Cart state is stored in the browser; a production checkout, payment processor, and order-management backend are outside this repository.
+- Salted scrypt password hashes, rotated HttpOnly sessions, seven-day expiry, and owner/member roles.
+- SQLite-backed `orders`, `messages` workflows with access checks and server-side validation.
+- Connected account screens for saved records, search, paging, and activity; resource permissions control available actions.
+- Transactional writes, retry keys, version-aware edits to mutable records, bounded requests, and protected server files.
+
+[Routes, storage design, and access rules](docs/backend.md) · [Workspace preview](docs/workspace-preview.jpg)
+
+![Account workspace](docs/workspace-preview.jpg)
+
+## Verification
+
+`npm run test:api` passes **3 backend tests**, covering account security, session expiry/persistence, access control, validation, and the repository workflow.
+
+The account/resource flow passes browser checks at 375px and 1280px without page JavaScript errors or horizontal overflow in those flows. [GitHub Actions](.github/workflows/fullstack.yml) runs backend checks on pushes and pull requests.
+
+## Project context
+
+[Mustafa Sarwari](https://github.com/mustafa-sarwari) — junior full-stack developer building deeper frontend integration, server validation, authentication, database, and testing skills. The HTTP/account workspace foundation is reused across these portfolio projects; each project’s domain behavior is described above. Original community content, educational fixtures, and licenses remain attributed.
+
+A Node runtime is required for accounts, persistence, provider proxies, and webhooks. Static previews show frontend assets. Demonstration orders do not process payments; stored requests are not emailed. Live provider/store credentials have not been exercised by the fixture tests.

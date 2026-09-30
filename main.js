@@ -229,25 +229,9 @@ function handleNewsletterSubmit(e) {
     
     if (!email) return;
 
-    // Simulate API call
-    button.textContent = 'Subscribing...';
-    button.disabled = true;
+    message.textContent = 'Newsletter preview only. No subscription or email has been sent.';
+    message.setAttribute('role', 'status');
 
-    setTimeout(() => {
-        message.textContent = 'Thank you for subscribing! Check your email for confirmation.';
-        message.style.color = 'var(--color-accent)';
-        emailInput.value = '';
-        button.textContent = 'Subscribe';
-        button.disabled = false;
-
-        // Clear message after 5 seconds
-        setTimeout(() => {
-            message.textContent = '';
-        }, 5000);
-
-        // Show toast
-        cart.showNotification('Successfully subscribed to newsletter!');
-    }, 1000);
 }
 
 // Scroll Effects
